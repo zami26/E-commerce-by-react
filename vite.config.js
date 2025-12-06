@@ -4,6 +4,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === 'production'
-    ? '/E-commerce-by-react/'   // For GitHub Pages
-    : '/',                       // For local dev
+    ? '/E-commerce-by-react/'   
+    : '/',                       
 })
