@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { googleProvider, githubProvider } from '../firebase/firebase.config';
+import { googleProvider, githubProvider } from '../Firebase/firebase.config';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { toast } from 'react-toastify';
