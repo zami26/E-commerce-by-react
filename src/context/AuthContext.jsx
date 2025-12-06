@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { auth, googleProvider, githubProvider } from '../firebase/firebase.config'; // Import providers
+import { auth, googleProvider, githubProvider } from '../Firebase/firebase.config.js'; // Import providers
 import "../style/auth.css";
 import { 
   createUserWithEmailAndPassword, 
