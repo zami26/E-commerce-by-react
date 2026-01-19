@@ -51,7 +51,7 @@ const Orders = () => {
           <div className="order-summary">
             <h2>Order Summary</h2>
             <div className="order-item">
-              <img src={product.image} alt={product.title} />
+              <img src={product.img} alt={product.title} />
               <div className="item-details">
                 <h3>{product.title}</h3>
                 <p>Quantity: {quantity}</p>

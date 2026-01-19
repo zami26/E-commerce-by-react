@@ -3,10 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FiShoppingCart, FiUser, FiLogOut } from 'react-icons/fi';
 import "../style/navbar.css";
+import { useCart } from '../context/CartContext';
+import { FaShoppingCart } from 'react-icons/fa';
 
 const Navbar = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+
+  const { cartItems } = useCart();   // ✅ ADD THIS
+  const cartCount = cartItems.length; // ✅ ADD THIS
 
   const handleLogout = async () => {
     try {
@@ -24,11 +29,18 @@ const Navbar = () => {
           <FiShoppingCart className="logo-icon" />
           <span>ShopNow</span>
         </Link>
-        
+
         <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
-          
+
+          <Link to="/cart" className="cart-link">
+            <FaShoppingCart />
+            {cartCount > 0 && (
+              <span className="cart-count">{cartCount}</span>
+            )}
+          </Link>
+
           {currentUser ? (
             <>
               <span className="user-info">
@@ -50,5 +62,6 @@ const Navbar = () => {
     </nav>
   );
 };
+
 
 export default Navbar;

@@ -4,6 +4,8 @@ import productsData from '../data/products.json';  // Import your data
 import { FaStar, FaArrowLeft, FaShoppingCart, FaTruck } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import "../style/product-details.css";
+import { useCart } from "../context/CartContext";
+
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -13,12 +15,13 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     // Find product by ID in your local data
     const foundProduct = productsData.find(p => p.id === id);
     setProduct(foundProduct);
-    
+
     if (foundProduct) {
       // Find related products from same category
       const related = productsData
@@ -26,7 +29,7 @@ const ProductDetails = () => {
         .slice(0, 4);
       setRelatedProducts(related);
     }
-    
+
     setLoading(false);
   }, [id]);
 
@@ -44,7 +47,7 @@ const ProductDetails = () => {
       <p>Loading product details...</p>
     </div>
   );
-  
+
   if (!product) return (
     <div className="error-container">
       <h2>Product not found</h2>
@@ -63,7 +66,7 @@ const ProductDetails = () => {
         <button onClick={() => navigate(-1)} className="back-btn">
           <FaArrowLeft /> Back
         </button>
-        
+
         <div className="product-details-grid">
           {/* Product Images */}
           <div className="product-images">
@@ -71,7 +74,7 @@ const ProductDetails = () => {
               <img src={product.img} alt={product.name} />
             </div>
           </div>
-          
+
           {/* Product Info */}
           <div className="product-info">
             <div className="product-header">
@@ -79,7 +82,7 @@ const ProductDetails = () => {
               <h1>{product.name}</h1>
               <p className="product-seller">By {product.seller}</p>
             </div>
-            
+
             <div className="product-rating-section">
               <div className="rating">
                 <span className="stars">
@@ -94,7 +97,7 @@ const ProductDetails = () => {
                 <span className="rating-count">({product.ratingsCount} reviews)</span>
               </div>
             </div>
-            
+
             <div className="product-price-section">
               <div className="price-display">
                 <span className="current-price">${product.price}</span>
@@ -102,7 +105,7 @@ const ProductDetails = () => {
                   <span className="low-stock-warning">Only {product.stock} left in stock!</span>
                 )}
               </div>
-              
+
               <div className="shipping-info">
                 <FaTruck />
                 <span>Shipping: ${product.shipping}</span>
@@ -111,12 +114,12 @@ const ProductDetails = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Quantity Selector */}
             <div className="quantity-section">
               <label>Quantity:</label>
               <div className="quantity-controls">
-                <button 
+                <button
                   onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                   className="quantity-btn"
                 >
@@ -133,7 +136,7 @@ const ProductDetails = () => {
                   }}
                   className="quantity-input"
                 />
-                <button 
+                <button
                   onClick={() => setQuantity(prev => Math.min(product.stock, prev + 1))}
                   className="quantity-btn"
                 >
@@ -142,18 +145,22 @@ const ProductDetails = () => {
               </div>
               <span className="stock-info">Available: {product.stock} units</span>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="action-buttons">
               <button onClick={handleOrder} className="order-now-btn">
                 <FaShoppingCart /> Order Now - ${totalPrice.toFixed(2)}
               </button>
-              
-              <button className="add-to-cart-btn">
+
+              <button
+                onClick={() => addToCart(product)}
+                className="bg-black text-white px-6 py-2 rounded"
+              >
                 Add to Cart
               </button>
+
             </div>
-            
+
             {/* Product Details */}
             <div className="product-specs">
               <h3>Product Details</h3>
@@ -178,15 +185,15 @@ const ProductDetails = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="related-products">
             <h2>Related Products</h2>
             <div className="related-products-grid">
               {relatedProducts.map(relatedProduct => (
-                <div 
-                  key={relatedProduct.id} 
+                <div
+                  key={relatedProduct.id}
                   className="related-product-card"
                   onClick={() => navigate(`/product/${relatedProduct.id}`)}
                 >
