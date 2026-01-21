@@ -1,32 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import productsData from '../data/products.json';
 import "../style/home.css";
 import BannerCarousel from '../components/BannerCarousel';
 import HealthSection from './HealthSection';
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]); // NEW
+
+  // useEffect(() => {
+  //   // Extract unique categories from products data
+  //   const uniqueCategories = [...new Set(products.map(product => product.category))];
+
+  //   // Count products in each category
+  //   const categoriesWithCount = uniqueCategories.map(category => {
+  //     const categoryProducts = products.filter(product => product.category === category);
+  //     return {
+  //       name: category,
+  //       count: categoryProducts.length,
+  //       // Get a sample product image for the category
+  //       image: categoryProducts[0]?.img || '',
+  //       // Get 3 sample products for preview
+  //       sampleProducts: categoryProducts.slice(0, 3)
+  //     };
+  //   });
+
+  //   setCategories(categoriesWithCount);
+  // }, []);
+
+
 
   useEffect(() => {
-    // Extract unique categories from products data
-    const uniqueCategories = [...new Set(productsData.map(product => product.category))];
+  fetch('http://localhost:5000/api/products')
+    .then(res => res.json())
+    .then(data => {
+      setProducts(data); // store backend data
 
-    // Count products in each category
-    const categoriesWithCount = uniqueCategories.map(category => {
-      const categoryProducts = productsData.filter(product => product.category === category);
-      return {
-        name: category,
-        count: categoryProducts.length,
-        // Get a sample product image for the category
-        image: categoryProducts[0]?.img || '',
-        // Get 3 sample products for preview
-        sampleProducts: categoryProducts.slice(0, 3)
-      };
-    });
+      // Extract unique categories
+      const uniqueCategories = [...new Set(data.map(product => product.category))];
 
-    setCategories(categoriesWithCount);
-  }, []);
+      // Build category info
+      const categoriesWithCount = uniqueCategories.map(category => {
+        const categoryProducts = data.filter(product => product.category === category);
+        return {
+          name: category,
+          count: categoryProducts.length,
+          image: categoryProducts[0]?.img || '',
+          sampleProducts: categoryProducts.slice(0, 3)
+        };
+      });
+
+      setCategories(categoriesWithCount);
+    })
+    .catch(err => console.error(err));
+}, []);
+
+
+
 
   return (
     <div className="home-page">
@@ -90,7 +120,7 @@ const Home = () => {
           </div>
 
           <div className="featured-products">
-            {productsData.slice(0, 6).map(product => (
+            {products.slice(0, 6).map(product => (
               <div key={product.id} className="featured-product-card">
                 <img src={product.img} alt={product.name} />
                 <div className="featured-product-info">
@@ -114,7 +144,7 @@ const Home = () => {
         <div className="container">
           <div className="stats-grid">
             <div className="stat-item">
-              <h3>{productsData.length}</h3>
+              <h3>{products.length}</h3>
               <p>Total Products</p>
             </div>
             <div className="stat-item">
@@ -122,11 +152,11 @@ const Home = () => {
               <p>Categories</p>
             </div>
             <div className="stat-item">
-              <h3>{new Set(productsData.map(p => p.seller)).size}</h3>
+              <h3>{new Set(products.map(p => p.seller)).size}</h3>
               <p>Brands</p>
             </div>
             <div className="stat-item">
-              <h3>{productsData.reduce((sum, product) => sum + product.stock, 0)}</h3>
+              <h3>{products.reduce((sum, product) => sum + product.stock, 0)}</h3>
               <p>Items in Stock</p>
             </div>
           </div>

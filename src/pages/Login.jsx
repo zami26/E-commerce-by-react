@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { googleProvider, githubProvider } from '../Firebase/firebase.config';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
+import { FaUserShield } from 'react-icons/fa'; // Import admin icon
 import { toast } from 'react-toastify';
 
 const Login = () => {
@@ -46,6 +47,13 @@ const Login = () => {
     } catch (error) {
       toast.error('GitHub login failed: ' + error.message);
     }
+  };
+
+  const handleAdminLogin = () => {
+    // You can implement admin-specific authentication here
+    // For now, we'll just navigate to admin page
+    // In production, you should check admin credentials
+    navigate('/admin/login');
   };
 
   return (
@@ -93,6 +101,19 @@ const Login = () => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        
+        {/* Admin Login Button */}
+        <div className="admin-login-section">
+          <button 
+            onClick={handleAdminLogin} 
+            className="admin-btn"
+          >
+            <FaUserShield /> Login as Admin
+          </button>
+          <p className="admin-note">
+            Admin access required for product management
+          </p>
+        </div>
         
         <p className="switch-auth">
           Don't have an account? <Link to="/register">Register here</Link>

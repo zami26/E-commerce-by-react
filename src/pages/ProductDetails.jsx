@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import productsData from '../data/products.json';  // Import your data
+// import productsData from '../data/products.json';  // Import your data
 import { FaStar, FaArrowLeft, FaShoppingCart, FaTruck } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import "../style/product-details.css";
@@ -18,20 +18,33 @@ const ProductDetails = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    // Find product by ID in your local data
-    const foundProduct = productsData.find(p => p.id === id);
-    setProduct(foundProduct);
+  setLoading(true);
 
-    if (foundProduct) {
-      // Find related products from same category
-      const related = productsData
-        .filter(p => p.category === foundProduct.category && p.id !== id)
-        .slice(0, 4);
-      setRelatedProducts(related);
-    }
+  // Fetch product details
+  fetch(`http://localhost:5000/api/products/${id}`)
+    .then(res => res.json())
+    .then(data => {
+      setProduct(data);
 
-    setLoading(false);
-  }, [id]);
+      // Fetch related products (same category)
+      return fetch(`http://localhost:5000/api/products/category/${data.category
+        .toLowerCase()
+        .replace(/'/g, '')
+        .replace(/\s+/g, '-')}`);
+    })
+    .then(res => res.json())
+    .then(related => {
+      setRelatedProducts(
+        related.filter(p => p.id !== id).slice(0, 4)
+      );
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+}, [id]);
+
 
   const handleOrder = () => {
     if (!currentUser) {

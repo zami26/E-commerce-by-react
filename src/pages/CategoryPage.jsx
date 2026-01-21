@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import productsData from '../data/products.json';
 import '../style/CategoryPage.css';
 
 const CategoryPage = () => {
@@ -10,31 +9,37 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Decode category name from URL
-    const decodedCategoryName = categoryName
-      .replace(/-/g, ' ')
-      .replace(/men s/g, "men's")
-      .replace(/women s/g, "women's");
+  setLoading(true);
 
-    // Find the actual category name from products
-    const actualCategory = [...new Set(productsData.map(p => p.category))]
-      .find(cat => cat.toLowerCase().replace(/'/g, '').replace(/\s+/g, '-') === categoryName);
+  fetch(`http://localhost:5000/api/products/category/${categoryName}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.length === 0) {
+        setCategoryInfo(null);
+        setCategoryProducts([]);
+      } else {
+        setCategoryProducts(data);
 
-    if (actualCategory) {
-      const filteredProducts = productsData.filter(
-        product => product.category === actualCategory
-      );
-      setCategoryProducts(filteredProducts);
-      setCategoryInfo({
-        name: actualCategory,
-        count: filteredProducts.length,
-        totalStock: filteredProducts.reduce((sum, p) => sum + p.stock, 0),
-        averagePrice: (filteredProducts.reduce((sum, p) => sum + p.price, 0) / filteredProducts.length).toFixed(2),
-        averageRating: (filteredProducts.reduce((sum, p) => sum + p.ratings, 0) / filteredProducts.length).toFixed(1)
-      });
-    }
-    setLoading(false);
-  }, [categoryName]);
+        setCategoryInfo({
+          name: data[0].category,
+          count: data.length,
+          totalStock: data.reduce((sum, p) => sum + p.stock, 0),
+          averagePrice: (
+            data.reduce((sum, p) => sum + p.price, 0) / data.length
+          ).toFixed(2),
+          averageRating: (
+            data.reduce((sum, p) => sum + p.ratings, 0) / data.length
+          ).toFixed(1)
+        });
+      }
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+}, [categoryName]);
+
 
   if (loading) {
     return (
